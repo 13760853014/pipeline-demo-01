@@ -49,16 +49,17 @@ pipeline {
                     expression { env.GIT_TAG != null }
                 }
             }
-            agent {
-                docker {
-                    image 'lwolf/helm-kubectl-docker'
-                }
-            }
+            //agent {
+            //    docker {
+            //        image 'lwolf/helm-kubectl-docker'
+            //    }
+            //}
             steps {
-                sh "mkdir -p ~/.kube"
-                sh "echo ${K8S_CONFIG} | base64 -d > ~/.kube/config"
-                sh "sed -e 's#{IMAGE_URL}#${params.HARBOR_HOST}/${params.DOCKER_IMAGE}#g;s#{IMAGE_TAG}#${GIT_TAG}#g;s#{APP_NAME}#${params.APP_NAME}#g;s#{SPRING_PROFILE}#k8s-test#g' k8s-deployment.tpl > k8s-deployment.yml"
-                sh "kubectl apply -f k8s-deployment.yml --namespace=${params.K8S_NAMESPACE}"
+                sh "docker run -p 40080:40080 ${params.HARBOR_HOST}/${params.DOCKER_IMAGE}:${GIT_TAG}"
+                //sh "mkdir -p ~/.kube"
+                //sh "echo ${K8S_CONFIG} | base64 -d > ~/.kube/config"
+                //sh "sed -e 's#{IMAGE_URL}#${params.HARBOR_HOST}/${params.DOCKER_IMAGE}#g;s#{IMAGE_TAG}#${GIT_TAG}#g;s#{APP_NAME}#${params.APP_NAME}#g;s#{SPRING_PROFILE}#k8s-test#g' k8s-deployment.tpl > k8s-deployment.yml"
+                //sh "kubectl apply -f k8s-deployment.yml --namespace=${params.K8S_NAMESPACE}"
             }
             
         }
