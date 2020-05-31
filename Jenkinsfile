@@ -1,15 +1,12 @@
 // 需要在jenkins的Credentials设置中配置jenkins-harbor-creds、jenkins-k8s-config参数
 import hudson.model.*;
 
-println env.JOB_NAME
-println env.BUILD_NUMBER
-
 pipeline {
     agent any
     environment {
         HARBOR_CREDS = credentials('jenkins-harbor-creds')
         //K8S_CONFIG = credentials('jenkins-k8s-config')
-        GIT_TAG = sh(returnStdout: true,script: 'git describe --tags --always').trim()
+        GIT_TAG = env.BUILD_NUMBER//sh(returnStdout: true,script: 'git describe --tags --always').trim()
         GIT_REPO = sh(label: '', returnStdout: true, script: 'git config remote.origin.url').trim()
     }
     parameters {
@@ -51,10 +48,6 @@ pipeline {
                 sh "echo JENKINS_URL = $JENKINS_URL"
                 sh "echo BUILD_URL = $BUILD_URL"
                 sh "echo JOB_URL = $JOB_URL"
-
-                git branch: 'dev-server', url: 'ssh://git@******/******.git'
-                sh 'git status'
-                sh 'git branch'
 			}
 		}
         stage('Maven Build') {
