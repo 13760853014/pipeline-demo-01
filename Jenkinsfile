@@ -6,7 +6,7 @@ pipeline {
     environment {
         HARBOR_CREDS = credentials('jenkins-harbor-creds')
         //K8S_CONFIG = credentials('jenkins-k8s-config')
-        GIT_TAG = env.BUILD_NUMBER//sh(returnStdout: true,script: 'git describe --tags --always').trim()
+        GIT_TAG = sh("$BUILD_NUMBER")//sh(returnStdout: true,script: 'git describe --tags --always').trim()
         GIT_REPO = sh(label: '', returnStdout: true, script: 'git config remote.origin.url').trim()
     }
     parameters {
