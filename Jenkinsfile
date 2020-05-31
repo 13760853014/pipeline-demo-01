@@ -1,12 +1,11 @@
 // 需要在jenkins的Credentials设置中配置jenkins-harbor-creds、jenkins-k8s-config参数
-import hudson.model.*;
 
 pipeline {
     agent any
     environment {
         HARBOR_CREDS = credentials('jenkins-harbor-creds')
         //K8S_CONFIG = credentials('jenkins-k8s-config')
-        GIT_TAG = sh($BUILD_NUMBER)//sh(returnStdout: true,script: 'git describe --tags --always').trim()
+        GIT_TAG = sh(returnStdout: true,script: 'git describe --tags --always').trim()
         GIT_REPO = sh(label: '', returnStdout: true, script: 'git config remote.origin.url').trim()
     }
     parameters {
@@ -16,40 +15,6 @@ pipeline {
         //string(name: 'K8S_NAMESPACE', defaultValue: 'demo', description: 'k8s的namespace名称')
     }
     stages {
-
-        stage("Preparation") {
-			steps{
-				script {
-					print "gitlab branch: " + env.gitlabSourceBranch
-                    print "gitlab GIT_REPO: " + env.GIT_REPO
-                    print "gitlab branchName: " + env.gitlabSourceBranch
-                    print "gitlab username: " + env.gitlabUserName
-				}
-
-				sh "echo PROJECT = ${params.PROJECT}"
-                sh "echo INSTALL = ${params.INSTALL}"
-                sh "echo ENV = ${params.ENV}"
-                sh "echo FORCE = ${params.FORCE}"
-                sh "echo INIT = ${params.INIT}"
-
-                sh "echo WORKSPACE = $WORKSPACE"
-                sh "echo BUILD_ID = $BUILD_ID"
-
-                sh 'pwd'
-
-                sh "echo BUILD_NUMBER = $BUILD_NUMBER"
-                sh "echo JOB_NAME = $JOB_NAME"
-                sh "echo JOB_BASE_NAME = $JOB_BASE_NAME"
-                sh "echo BUILD_TAG = $BUILD_TAG"
-                sh "echo EXECUTOR_NUMBER = $EXECUTOR_NUMBER"
-                sh "echo NODE_NAME = $NODE_NAME"
-                sh "echo NODE_LABELS = $NODE_LABELS"
-                sh "echo JENKINS_HOME = $JENKINS_HOME"
-                sh "echo JENKINS_URL = $JENKINS_URL"
-                sh "echo BUILD_URL = $BUILD_URL"
-                sh "echo JOB_URL = $JOB_URL"
-			}
-		}
         stage('Maven Build') {
             when { expression { env.GIT_TAG != null } }
             agent {
