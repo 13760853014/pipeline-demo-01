@@ -1,4 +1,9 @@
 // 需要在jenkins的Credentials设置中配置jenkins-harbor-creds、jenkins-k8s-config参数
+import hudson.model.*;
+
+println env.JOB_NAME
+println env.BUILD_NUMBER
+
 pipeline {
     agent any
     environment {
@@ -14,22 +19,28 @@ pipeline {
         //string(name: 'K8S_NAMESPACE', defaultValue: 'demo', description: 'k8s的namespace名称')
     }
     stages {
+
+        stage("Preparation") {
+			steps{
+				script {
+					print "gitlab branch: " + env.gitlabSourceBranch
+                    print "gitlab GIT_REPO: " + env.GIT_REPO
+                    print "gitlab branchName: " + env.gitlabSourceBranch
+                    print "gitlab username: " + env.gitlabUserName
+                    pom = readMavenPom file: ""
+                    print "gitlab pom: " + pom
+
+                    version = pom.version
+                    if (version.lastIndexOf("-") > 0) {
+                        version = version.substring(0, version.lastIndexOf("-"))
+                        print "gitlab version1: " + version
+                    } else {
+                        print "gitlab version2: " + version
+                    }
+				}
+			}
+		}
         stage('Maven Build') {
-            print "gitlab branch: " + env.gitlabSourceBranch
-            print "gitlab GIT_REPO: " + env.GIT_REPO
-            print "gitlab branchName: " + env.gitlabSourceBranch
-            print "gitlab username: " + env.gitlabUserName
-            pom = readMavenPom file: ""
-            print "gitlab pom: " + pom
-
-            version = pom.version
-            if (version.lastIndexOf("-") > 0) {
-                version = version.substring(0, version.lastIndexOf("-"))
-                print "gitlab version1: " + version
-            } else {
-                print "gitlab version2: " + version
-            }
-
             when { expression { env.GIT_TAG != null } }
             agent {
                 docker {
