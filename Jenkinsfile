@@ -5,6 +5,7 @@ pipeline {
         HARBOR_CREDS = credentials('jenkins-harbor-creds')
         //K8S_CONFIG = credentials('jenkins-k8s-config')
         GIT_TAG = sh(returnStdout: true,script: 'git describe --tags --always').trim()
+        GIT_REPO = sh(label: '', returnStdout: true, script: 'git config remote.origin.url').trim()
     }
     parameters {
         string(name: 'HARBOR_HOST', defaultValue: '47.106.81.219', description: 'harbor仓库地址')
@@ -14,6 +15,21 @@ pipeline {
     }
     stages {
         stage('Maven Build') {
+            print "gitlab branch: " + env.gitlabSourceBranch
+            print "gitlab GIT_REPO: " + env.GIT_REPO
+            print "gitlab branchName: " + env.gitlabSourceBranch
+            print "gitlab username: " + env.gitlabUserName
+            pom = readMavenPom file: ""
+            print "gitlab pom: " + pom
+
+            version = pom.version
+            if (version.lastIndexOf("-") > 0) {
+                version = version.substring(0, version.lastIndexOf("-"))
+                print "gitlab version1: " + version
+            } else {
+                print "gitlab version2: " + version
+            }
+
             when { expression { env.GIT_TAG != null } }
             agent {
                 docker {
