@@ -1,12 +1,10 @@
 // 需要在jenkins的Credentials设置中配置jenkins-harbor-creds、jenkins-k8s-config参数
-
 pipeline {
     agent any
     environment {
         HARBOR_CREDS = credentials('jenkins-harbor-creds')
         //K8S_CONFIG = credentials('jenkins-k8s-config')
         GIT_TAG = sh(returnStdout: true,script: 'git describe --tags --always').trim()
-        GIT_REPO = sh(label: '', returnStdout: true, script: 'git config remote.origin.url').trim()
     }
     parameters {
         string(name: 'HARBOR_HOST', defaultValue: '47.106.81.219', description: 'harbor仓库地址')
