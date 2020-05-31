@@ -27,17 +27,34 @@ pipeline {
                     print "gitlab GIT_REPO: " + env.GIT_REPO
                     print "gitlab branchName: " + env.gitlabSourceBranch
                     print "gitlab username: " + env.gitlabUserName
-                    pom = readMavenPom file: ""
-                    print "gitlab pom: " + pom
-
-                    version = pom.version
-                    if (version.lastIndexOf("-") > 0) {
-                        version = version.substring(0, version.lastIndexOf("-"))
-                        print "gitlab version1: " + version
-                    } else {
-                        print "gitlab version2: " + version
-                    }
 				}
+
+				sh "echo PROJECT = ${params.PROJECT}"
+                sh "echo INSTALL = ${params.INSTALL}"
+                sh "echo ENV = ${params.ENV}"
+                sh "echo FORCE = ${params.FORCE}"
+                sh "echo INIT = ${params.INIT}"
+
+                sh "echo WORKSPACE = $WORKSPACE"
+                sh "echo BUILD_ID = $BUILD_ID"
+
+                sh 'pwd'
+
+                sh "echo BUILD_NUMBER = $BUILD_NUMBER"
+                sh "echo JOB_NAME = $JOB_NAME"
+                sh "echo JOB_BASE_NAME = $JOB_BASE_NAME"
+                sh "echo BUILD_TAG = $BUILD_TAG"
+                sh "echo EXECUTOR_NUMBER = $EXECUTOR_NUMBER"
+                sh "echo NODE_NAME = $NODE_NAME"
+                sh "echo NODE_LABELS = $NODE_LABELS"
+                sh "echo JENKINS_HOME = $JENKINS_HOME"
+                sh "echo JENKINS_URL = $JENKINS_URL"
+                sh "echo BUILD_URL = $BUILD_URL"
+                sh "echo JOB_URL = $JOB_URL"
+
+                git branch: 'dev-server', url: 'ssh://git@******/******.git'
+                sh 'git status'
+                sh 'git branch'
 			}
 		}
         stage('Maven Build') {
